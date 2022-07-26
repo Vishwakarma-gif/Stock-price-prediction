@@ -1,10 +1,22 @@
 # pip install streamlit fbprophet yfinance plotly
-import streamlit as st
+# import packages and alias
+import numpy as np # data arrays
+import pandas as pd # data structure and data analysis
+import matplotlib as plt # data visualization
+import matplotlib.pyplot as plt
+import datetime as dt # date time
+import xgboost as xgb
+from xgboost import plot_importance, plot_tree
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+import seaborn as sns
+#import warnings
+#warnings.filterwarnings("ignore")
+%matplotlib inline
+sns.set_theme()
+pd.set_option('display.max_columns', None)
+import math
 
 import yfinance as yf
-from prophet import Prophet
-from prophet.plot import plot_plotly
-from plotly import graph_objs as go
 
 st.image("compunnel.png",width=100)
 
@@ -12,10 +24,6 @@ st.title('Stock Forecast App')
 
 stocks = ('AAPL', 'MSFT', 'UNH','GOOG','AMZN') 
 selected_stock = st.selectbox('Select dataset for prediction', stocks)
-
-n_years = st.slider('Years of prediction:', 1, 4)
-period = n_years * 365
-
 
 @st.cache
 def load_data(ticker):
@@ -41,34 +49,15 @@ def plot_raw_data():
 	
 plot_raw_data()
 
-# Predict forecast with Prophet.
-df_train = data[['Date','Close']]
-df_train = df_train.rename(columns={"Date": "ds", "Close": "y"})
+AAL_df['Close_first']=AAL_df['Close']-AAL_df['Close'].shift(1)
 
-m = Prophet()
-m.fit(df_train)
-future = m.make_future_dataframe(periods=period)
-forecast = m.predict(future)
+AAL_df.drop(['Close','Adj Close','Open','High','Low','EMA_0.1','Volume'],axis=1,inplace=True)
+AAL_df.dropna(inplace=True)
 
-# Show and plot forecast
-st.subheader('Forecast data')
-st.write(forecast.tail())
-    
-csv=forecast[['ds','yhat_upper','yhat_lower','yhat']].to_csv(index=False).encode("utf-8")
-st.download_button(
-         label="Download data as CSV",
-         data=csv,
-         file_name='forecaste.csv',
-         mime='text/csv',
-         )
+train=AAL_df.loc[AAL_df.index<'2021-05-01']
+test=AAL_df.loc[AAL_df.index>='2021-05-01']
 
+reg=load_model('/content/xgboost.h5')
+pred=reg.predict(X_test)
 
-
-st.subheader(f'Forecast plot for {n_years} years')
-fig1 = plot_plotly(m, forecast)
-st.plotly_chart(fig1)
-
-st.subheader("Forecast components")
-fig2 = m.plot_components(forecast)
-st.write(fig2)
-Footer
+st.write('pred')
