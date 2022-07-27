@@ -15,9 +15,10 @@ stocks = ('AAPL', 'MSFT', 'UNH','GOOG','AMZN')
 user_input = st.selectbox('Select dataset for prediction', stocks)
 
 
-start = '2017-01-01'
-
-df = data.DataReader(user_input,'yahoo',start)
+def load_data(ticker):
+    data = yf.download(ticker,period = '5y')
+    data.reset_index(inplace=True)
+    return data
 
 #Describing Data
 
