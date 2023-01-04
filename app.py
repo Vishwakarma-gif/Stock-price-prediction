@@ -5,14 +5,14 @@ from prophet import Prophet
 from prophet.plot import plot_plotly
 from plotly import graph_objs as go
 
-st.image("compunnel.png",width=100)
+st.image("compunnel.png",width=200)
 
 st.title('Stock Forecast App')
 
 stocks = ('AAPL', 'MSFT', 'UNH','GOOG','AMZN') 
 selected_stock = st.selectbox('Select dataset for prediction', stocks)
 
-n_years = st.slider('Years of prediction:', 1, 4)
+n_years = st.slider('Years of prediction:', 1, 2)
 period = n_years * 365
 
 
@@ -32,7 +32,7 @@ st.write(data.tail())
 
 # Plot raw data
 def plot_raw_data():
-	fig = go.Figure()
+	fig = go.Figure(figsize=(18,9))
 	fig.add_trace(go.Scatter(x=data['Date'], y=data['Open'], name="stock_open"))
 	fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name="stock_close"))
 	fig.layout.update(title_text='Time Series data with Rangeslider', xaxis_rangeslider_visible=True)
