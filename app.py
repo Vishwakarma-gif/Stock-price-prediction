@@ -12,7 +12,7 @@ st.title('Stock Forecast App')
 stocks = ('AAPL', 'MSFT', 'UNH','GOOG','AMZN') 
 selected_stock = st.selectbox('Select dataset for prediction', stocks)
 
-n_years = st.slider('Years of prediction:', 1, 2)
+n_years = st.slider('Years of prediction:', 1, 3)
 period = n_years * 365
 
 
